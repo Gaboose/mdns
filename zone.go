@@ -94,18 +94,19 @@ func NewMDNSService(instance, service, domain, hostName string, port int, ips []
 	}
 
 	if len(ips) == 0 {
-		var err error
-		ips, err = net.LookupIP(hostName)
+		addrs, err := net.InterfaceAddrs()
 		if err != nil {
-			// Try appending the host domain suffix and lookup again
-			// (required for Linux-based hosts)
-			tmpHostName := fmt.Sprintf("%s%s", hostName, domain)
-
-			ips, err = net.LookupIP(tmpHostName)
-
-			if err != nil {
-				return nil, fmt.Errorf("could not determine host IP addresses for %s", hostName)
+			return nil, fmt.Errorf("could not determine interface IP addresses")
+		}
+		for _, addr := range addrs {
+			var ip net.IP
+			switch v := addr.(type) {
+			case *net.IPNet:
+				ip = v.IP
+			case *net.IPAddr:
+				ip = v.IP
 			}
+			ips = append(ips, ip)
 		}
 	}
 	for _, ip := range ips {
