@@ -1,3 +1,9 @@
+Forked from [hashicorp/mdns](https://github.com/hashicorp/mdns) with a selection
+of PRs merged, because they were starting to pile up and stagnate.
+
+I'll add each author of a PR that's merged as a collaborator to this repo.
+See where that takes us.
+
 mdns
 ====
 
@@ -15,7 +21,7 @@ Using the library is very simple, here is an example of publishing a service ent
 package main
 
 import (
-	"github.com/hashicorp/mdns"
+	"github.com/Gaboose/mdns"
 	"os"
 )
 
@@ -40,7 +46,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/cryptix/mdns"
+	"github.com/Gaboose/mdns"
 )
 
 func main() {
