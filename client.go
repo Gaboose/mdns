@@ -2,7 +2,6 @@ package mdns
 
 import (
 	"fmt"
-	"log"
 	"net"
 	"strings"
 	"sync"
@@ -113,11 +112,11 @@ func newClient() (*client, error) {
 	// Create a IPv4 listener
 	uconn4, err := net.ListenUDP("udp4", &net.UDPAddr{IP: net.IPv4zero, Port: 0})
 	if err != nil {
-		log.Printf("[ERR] mdns: Failed to bind to udp4 port: %v", err)
+		Log.Printf("[ERR] mdns: Failed to bind to udp4 port: %v", err)
 	}
 	uconn6, err := net.ListenUDP("udp6", &net.UDPAddr{IP: net.IPv6zero, Port: 0})
 	if err != nil {
-		log.Printf("[ERR] mdns: Failed to bind to udp6 port: %v", err)
+		Log.Printf("[ERR] mdns: Failed to bind to udp6 port: %v", err)
 	}
 
 	if uconn4 == nil && uconn6 == nil {
@@ -126,11 +125,11 @@ func newClient() (*client, error) {
 
 	mconn4, err := net.ListenMulticastUDP("udp4", nil, ipv4Addr)
 	if err != nil {
-		log.Printf("[ERR] mdns: Failed to bind to udp4 port: %v", err)
+		Log.Printf("[ERR] mdns: Failed to bind to udp4 port: %v", err)
 	}
 	mconn6, err := net.ListenMulticastUDP("udp6", nil, ipv6Addr)
 	if err != nil {
-		log.Printf("[ERR] mdns: Failed to bind to udp6 port: %v", err)
+		Log.Printf("[ERR] mdns: Failed to bind to udp6 port: %v", err)
 	}
 
 	if mconn4 == nil && mconn6 == nil {
@@ -157,7 +156,7 @@ func (c *client) Close() error {
 	}
 	c.closed = true
 
-	log.Printf("[INFO] mdns: Closing client %v", *c)
+	Log.Printf("[INFO] mdns: Closing client %v", *c)
 	close(c.closedCh)
 
 	if c.ipv4UnicastConn != nil {
@@ -294,7 +293,7 @@ func (c *client) query(params *QueryParam) error {
 				m.SetQuestion(inp.Name, dns.TypePTR)
 				m.RecursionDesired = false
 				if err := c.sendQuery(m); err != nil {
-					log.Printf("[ERR] mdns: Failed to query instance %s: %v", inp.Name, err)
+					Log.Printf("[ERR] mdns: Failed to query instance %s: %v", inp.Name, err)
 				}
 			}
 		case <-finish:
@@ -335,12 +334,12 @@ func (c *client) recv(l *net.UDPConn, msgCh chan *dns.Msg) {
 		}
 		n, err := l.Read(buf)
 		if err != nil {
-			log.Printf("[ERR] mdns: Failed to read packet: %v", err)
+			Log.Printf("[ERR] mdns: Failed to read packet: %v", err)
 			continue
 		}
 		msg := new(dns.Msg)
 		if err := msg.Unpack(buf[:n]); err != nil {
-			log.Printf("[ERR] mdns: Failed to unpack packet: %v", err)
+			Log.Printf("[ERR] mdns: Failed to unpack packet: %v", err)
 			continue
 		}
 		select {
